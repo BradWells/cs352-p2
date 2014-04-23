@@ -1,12 +1,8 @@
-#ifndef pipe_sem
-#define pipe_sem
+#ifndef pipe_sem_h
+#define pipe_sem_h
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <sys/ipc.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 
 typedef struct
 {

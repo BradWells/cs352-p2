@@ -7,6 +7,10 @@
 void pipe_sem_init(pipe_sem_t *sem, int value)
 {
   sem->pipe_array = (int**) malloc(sizeof(int) * 2 * value);
+  if(!(sem->pipe_array)){
+    fprintf(stderr, "Malloc Failure\n");
+    exit(-1);
+  }
   sem->current_pipe = value-1;
   sem->max_pipe = value-1;
   int i;
@@ -18,10 +22,10 @@ void pipe_sem_init(pipe_sem_t *sem, int value)
 void pipe_sem_wait(pipe_sem_t *sem)
 {
   if(sem->current_pipe == -1){
-    lock_aquire(sem->pipe_array[0]);
+    lock_acquire(sem->pipe_array[0]);
   }
   else{
-    lock_aquire(sem->pipe_array[sem->current_pipe]);
+    lock_acquire(sem->pipe_array[sem->current_pipe]);
     sem->current_pipe--;
   }
   
