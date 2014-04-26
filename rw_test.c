@@ -23,8 +23,9 @@ void reader(){
   pipe_sem_signal(&read_mutex);
   pipe_sem_signal(&mutex_3);
  
+  readID++;
   printf("Reader thread %d enters CS\n", readID);
-  sleep(1000);
+  sleep(1);
   printf("Reader thread %d exits CS\n", readID);
  
   pipe_sem_wait(&mutex_1);
@@ -44,9 +45,10 @@ void writer(){
   pipe_sem_signal(&mutex_2);
  
   pipe_sem_wait(&write_mutex);
+  writeID++;
   printf("Writer thread %d enters CS\n", writeID);
-  sleep(1000);
-  printf("Writer thread %d enters CS\n", writeID);
+  sleep(1);
+  printf("Writer thread %d exits CS\n", writeID);
   pipe_sem_signal(&write_mutex);
  
   pipe_sem_wait(&mutex_2);
@@ -59,38 +61,40 @@ void writer(){
 
 int main(int argc, char* args[]){
   pipe_sem_init(&mutex_1, 1);
-  // pipe_sem_init(&mutex_2, 1);
-  // pipe_sem_init(&mutex_3, 1);
-  // pipe_sem_init(&write_mutex, 1);
-  // pipe_sem_init(&read_mutex, 1);
+  pipe_sem_init(&mutex_2, 1);
+  pipe_sem_init(&mutex_3, 1);
+  pipe_sem_init(&write_mutex, 1);
+  pipe_sem_init(&read_mutex, 1);
 
-  // readcount = 0;
-  // writecount = 0;
+  readcount = 0;
+  writecount = 0;
 
-  // if(argc < 2){
-  //   fprintf(stderr, "Not enough args");
-  //   exit(-1);
-  // }
+  if(argc < 2){
+    fprintf(stderr, "Not enough args\n");
+    exit(-1);
+  }
 
-  // int totalcount = atoi(args[1]);
-  // pthread_t th[totalcount];
+  int totalcount = atoi(args[1]);
+  pthread_t th[totalcount];
 
-  // int time_lapse = atoi(args[argc-1]);
+  int time_lapse = atoi(args[argc-1]);
 
-  // int i;
-  // for(i=0; i<totalcount; i++){
-  //   if(atoi(args[i+2]) == 0){
-  //     pthread_create(&th[i], NULL, reader, NULL);
-  //     readID++;
-  //   }
-  //   else if(atoi(args[i+2]) == 1){
-  //     pthread_create(&th[i], NULL, writer, NULL);
-  //     writeID++;
-  //   }
-  //   else{
-  //     fprintf(stderr, "Incorrect arg %s", args[i]);
-  //     exit(-1);
-  //   }
-  // }
+  int i;
+  for(i=0; i<totalcount; i++){
+    if(atoi(args[i+2]) == 0){
+      pthread_create(&th[i], NULL, reader, NULL);
+    }
+    else if(atoi(args[i+2]) == 1){
+      pthread_create(&th[i], NULL, writer, NULL);
+    }
+    else{
+      fprintf(stderr, "Incorrect arg %s", args[i]);
+      exit(-1);
+    }
+    sleep(time_lapse);
+  }
+  for(i=0; i<totalcount; i++){
+    pthread_join(th[i],NULL);
+  }
 
 }
